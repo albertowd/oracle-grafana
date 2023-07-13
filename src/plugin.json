@@ -1,0 +1,28 @@
+{
+  "$schema": "https://raw.githubusercontent.com/grafana/grafana/master/docs/sources/developers/plugins/plugin.schema.json",
+  "type": "datasource",
+  "name": "Oracle Grafana",
+  "id": "albertowd-oraclegrafana-datasource",
+  "metrics": true,
+  "backend": true,
+  "executable": "gpx_oracle_grafana",
+  "info": {
+    "description": "An oracle database datasource for grafana",
+    "author": {
+      "name": "Albertowd"
+    },
+    "keywords": ["datasource"],
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [],
+    "screenshots": [],
+    "version": "%VERSION%",
+    "updated": "%TODAY%"
+  },
+  "dependencies": {
+    "grafanaDependency": ">=9.5.3",
+    "plugins": []
+  }
+}
