@@ -3,38 +3,81 @@ import { InlineField, Input, SecretInput } from '@grafana/ui';
 import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
 import { MyDataSourceOptions, MySecureJsonData } from '../types';
 
-interface Props extends DataSourcePluginOptionsEditorProps<MyDataSourceOptions> {}
+interface Props extends DataSourcePluginOptionsEditorProps<MyDataSourceOptions> { }
 
 export function ConfigEditor(props: Props) {
   const { onOptionsChange, options } = props;
-  const onPathChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const jsonData = {
-      ...options.jsonData,
-      path: event.target.value,
-    };
-    onOptionsChange({ ...options, jsonData });
+
+  const onHostnameChange = (event: ChangeEvent<HTMLInputElement>) => {
+    onOptionsChange({
+      ...options,
+      jsonData: {
+        ...options.jsonData,
+        o_hostname: event.target.value,
+      }
+    });
+  };
+
+  const onPortChange = (event: ChangeEvent<HTMLInputElement>) => {
+    onOptionsChange({
+      ...options,
+      jsonData: {
+        ...options.jsonData,
+        o_port: Number(event.target.value),
+      }
+    });
+  };
+
+  const onServiceChange = (event: ChangeEvent<HTMLInputElement>) => {
+    onOptionsChange({
+      ...options,
+      jsonData: {
+        ...options.jsonData,
+        o_service: event.target.value,
+      }
+    });
+  };
+
+  const onSIDChange = (event: ChangeEvent<HTMLInputElement>) => {
+    onOptionsChange({
+      ...options,
+      jsonData: {
+        ...options.jsonData,
+        o_sid: event.target.value,
+      }
+    });
+  };
+
+  const onUserChange = (event: ChangeEvent<HTMLInputElement>) => {
+    onOptionsChange({
+      ...options,
+      jsonData: {
+        ...options.jsonData,
+        o_user: event.target.value,
+      }
+    });
   };
 
   // Secure field (only sent to the backend)
-  const onAPIKeyChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const onPasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
     onOptionsChange({
       ...options,
       secureJsonData: {
-        apiKey: event.target.value,
+        o_password: event.target.value,
       },
     });
   };
 
-  const onResetAPIKey = () => {
+  const onPasswordReset = () => {
     onOptionsChange({
       ...options,
       secureJsonFields: {
         ...options.secureJsonFields,
-        apiKey: false,
+        o_password: false
       },
       secureJsonData: {
         ...options.secureJsonData,
-        apiKey: '',
+        o_password: ''
       },
     });
   };
@@ -44,24 +87,67 @@ export function ConfigEditor(props: Props) {
 
   return (
     <div className="gf-form-group">
-      <InlineField label="Path" labelWidth={12}>
-        <Input
-          onChange={onPathChange}
-          value={jsonData.path || ''}
-          placeholder="json field returned to frontend"
-          width={40}
-        />
-      </InlineField>
-      <InlineField label="API Key" labelWidth={12}>
+      <div className="gf-form">
+        <InlineField label="Hostname" labelWidth={12}>
+          <Input
+            placeholder="localhost"
+            value={jsonData.o_hostname}
+            width={40}
+            onChange={onHostnameChange}
+          />
+        </InlineField>
+      </div>
+      <InlineField label="Password" labelWidth={12}>
         <SecretInput
-          isConfigured={(secureJsonFields && secureJsonFields.apiKey) as boolean}
-          value={secureJsonData.apiKey || ''}
-          placeholder="secure json field (backend only)"
+          isConfigured={(secureJsonFields && secureJsonFields.o_password) as boolean}
+          placeholder="oracle_password"
+          value={secureJsonData.o_password}
           width={40}
-          onReset={onResetAPIKey}
-          onChange={onAPIKeyChange}
+          onChange={onPasswordChange}
+          onReset={onPasswordReset}
         />
       </InlineField>
+      <div className="gf-form">
+        <InlineField label="Port" labelWidth={12}>
+          <Input
+            placeholder="1521"
+            type="number"
+            value={jsonData.o_port}
+            width={40}
+            onChange={onPortChange}
+          />
+        </InlineField>
+      </div>
+      <div className="gf-form">
+        <InlineField label="Service" labelWidth={12}>
+          <Input
+            placeholder=""
+            value={jsonData.o_service}
+            width={40}
+            onChange={onServiceChange}
+          />
+        </InlineField>
+      </div>
+      <div className="gf-form">
+        <InlineField label="SID" labelWidth={12}>
+          <Input
+            placeholder="XE"
+            value={jsonData.o_sid}
+            width={40}
+            onChange={onSIDChange}
+          />
+        </InlineField>
+      </div>
+      <div className="gf-form">
+        <InlineField label="User" labelWidth={12}>
+          <Input
+            placeholder="oracle_user"
+            value={jsonData.o_user}
+            width={40}
+            onChange={onUserChange}
+          />
+        </InlineField>
+      </div>
     </div>
   );
 }
