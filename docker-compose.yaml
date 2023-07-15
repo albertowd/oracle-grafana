@@ -1,15 +1,28 @@
-version: '3.0'
+version: "3.5"
 
 services:
   grafana:
-    container_name: 'albertowd-oraclegrafana-datasource'
-    build:
-      context: ./.config
-      args:
-        grafana_image: ${GRAFANA_IMAGE:-grafana-enterprise}
-        grafana_version: ${GRAFANA_VERSION:-9.5.3}
+    container_name: development-grafana
+    depends_on:
+      - oracle
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: 'true'
+      GF_LOG_LEVEL: debug
+      GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: albertowd-oraclegrafana-datasource
+    image: grafana/grafana:latest
     ports:
       - 3000:3000/tcp
+    restart: always
     volumes:
-      - ./dist:/var/lib/grafana/plugins/albertowd-oraclegrafana-datasource
-      - ./provisioning:/etc/grafana/provisioning
+      - ./dist:/var/lib/grafana/plugins/albertowd-oraclegrafana-datasource:ro
+  
+  oracle:
+    container_name: development-oracle
+    environment:
+      ORACLE_PWD: admin
+    image: container-registry.oracle.com/database/express:21.3.0-xe
+    ports:
+      - 1521:1521/tcp
+    restart: always
+    volumes:
+      - ./example/database:/opt/oracle/scripts/startup:ro
