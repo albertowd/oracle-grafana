@@ -12,18 +12,32 @@ type OracleDatasourceConnection struct {
 }
 
 func (c *OracleDatasourceConnection) Connect(settings *OracleDatasourceSettings) error {
+	var connection *sql.DB
 	var err error
 	if !c.IsConnected() {
 		urlOptions := map[string]string{}
 		if len(settings.O_sid) > 0 {
 			urlOptions["SID"] = settings.O_sid
 		}
-		connectionString := go_ora.BuildUrl(settings.O_hostname, settings.O_port, settings.O_service, settings.O_user, settings.O_password, urlOptions)
-		log.DefaultLogger.Debug(connectionString)
 
-		connection, conErr := sql.Open("oracle", connectionString)
-		if conErr != nil {
+		if len(settings.O_connStr) > 0 {
+			connectionString := go_ora.BuildJDBC(settings.O_user, settings.O_password, settings.O_connStr, urlOptions)
+			// connectionString := "User id=" + settings.O_user + ";password=" + settings.O_password + "datasource=" + settings.O_connStr
+			log.DefaultLogger.Debug(connectionString)
+
+			con, conErr := sql.Open("oracle", connectionString)
+			connection = con
 			err = conErr
+		} else {
+			connectionString := go_ora.BuildUrl(settings.O_hostname, settings.O_port, settings.O_service, settings.O_user, settings.O_password, urlOptions)
+			log.DefaultLogger.Debug(connectionString)
+
+			con, conErr := sql.Open("oracle", connectionString)
+			connection = con
+			err = conErr
+		}
+
+		if err != nil {
 			log.DefaultLogger.Error("Error connecting to Oracle: ", err)
 		} else {
 			c.connection = connection

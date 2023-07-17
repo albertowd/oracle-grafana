@@ -8,6 +8,7 @@ export interface MyQuery extends DataQuery {
  * These are options configured for each DataSource instance
  */
 export interface MyDataSourceOptions extends DataSourceJsonData {
+  o_connStr?: string;
   o_hostname?: string;
   o_port?: number;
   o_service?: string;

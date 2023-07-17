@@ -7,6 +7,7 @@ import (
 )
 
 type OracleDatasourceSettings struct {
+	O_connStr  string
 	O_hostname string
 	O_password string
 	O_port     int

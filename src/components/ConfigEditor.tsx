@@ -8,6 +8,16 @@ interface Props extends DataSourcePluginOptionsEditorProps<MyDataSourceOptions> 
 export function ConfigEditor(props: Props) {
   const { onOptionsChange, options } = props;
 
+  const onConnStrChange = (event: ChangeEvent<HTMLInputElement>) => {
+    onOptionsChange({
+      ...options,
+      jsonData: {
+        ...options.jsonData,
+        o_connStr: event.target.value,
+      }
+    });
+  };
+
   const onHostnameChange = (event: ChangeEvent<HTMLInputElement>) => {
     onOptionsChange({
       ...options,
@@ -88,6 +98,16 @@ export function ConfigEditor(props: Props) {
   return (
     <div className="gf-form-group">
       <div className="gf-form">
+        <InlineField label="ConnString" labelWidth={12}>
+          <Input
+            placeholder="(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SID=XE)))"
+            value={jsonData.o_connStr}
+            width={80}
+            onChange={onConnStrChange}
+          />
+        </InlineField>
+      </div>
+      <div className="gf-form">
         <InlineField label="Hostname" labelWidth={12}>
           <Input
             placeholder="localhost"
@@ -97,16 +117,19 @@ export function ConfigEditor(props: Props) {
           />
         </InlineField>
       </div>
-      <InlineField label="Password" labelWidth={12}>
-        <SecretInput
-          isConfigured={(secureJsonFields && secureJsonFields.o_password) as boolean}
-          placeholder="oracle_password"
-          value={secureJsonData.o_password}
-          width={40}
-          onChange={onPasswordChange}
-          onReset={onPasswordReset}
-        />
-      </InlineField>
+      <div className="gf-form">
+        <InlineField label="Password" labelWidth={12}>
+          <SecretInput
+            isConfigured={(secureJsonFields && secureJsonFields.o_password) as boolean}
+            placeholder="oracle_password"
+            required
+            value={secureJsonData.o_password}
+            width={40}
+            onChange={onPasswordChange}
+            onReset={onPasswordReset}
+          />
+        </InlineField>
+      </div>
       <div className="gf-form">
         <InlineField label="Port" labelWidth={12}>
           <Input
@@ -142,6 +165,7 @@ export function ConfigEditor(props: Props) {
         <InlineField label="User" labelWidth={12}>
           <Input
             placeholder="oracle_user"
+            required
             value={jsonData.o_user}
             width={40}
             onChange={onUserChange}
