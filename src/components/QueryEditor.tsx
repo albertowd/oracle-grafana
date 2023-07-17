@@ -6,9 +6,10 @@ import { MyDataSourceOptions, MyQuery } from '../types';
 
 type Props = QueryEditorProps<DataSource, MyQuery, MyDataSourceOptions>;
 
-export function QueryEditor({ query, onChange }: Props) {
+export function QueryEditor({ query, onChange, onRunQuery }: Props) {
   const onSQLChange = (event: FormEvent<HTMLTextAreaElement>) => {
     onChange({ ...query, o_sql: event.currentTarget.value });
+    onRunQuery();
   }
 
   return (
