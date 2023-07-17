@@ -16,7 +16,6 @@ type OracleDatasourceSettings struct {
 }
 
 func ParseDatasourceSettings(rawOptions json.RawMessage, decryptedOptions map[string]string) OracleDatasourceSettings {
-	log.DefaultLogger.Debug("Error on  ", "settings", rawOptions)
 	settings := OracleDatasourceSettings{}
 	settings.O_password = decryptedOptions["o_password"]
 	err := json.Unmarshal(rawOptions, &settings)

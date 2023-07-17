@@ -3,7 +3,6 @@ package plugin
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/instancemgmt"
@@ -51,7 +50,7 @@ func (d *OracleDatasource) CheckHealth(_ context.Context, req *backend.CheckHeal
 	d.settings = ParseDatasourceSettings(req.PluginContext.DataSourceInstanceSettings.JSONData, req.PluginContext.DataSourceInstanceSettings.DecryptedSecureJSONData)
 	log.DefaultLogger.Debug("Health check datasource settings", "name", d.name, "object", d.settings)
 
-	err := d.connection.Reconnect(d.settings)
+	err := d.connection.Reconnect(&d.settings)
 	if err != nil {
 		message = "Health check error: " + err.Error()
 		status = backend.HealthStatusError
@@ -99,13 +98,14 @@ type queryModel struct{}
 func (d *OracleDatasource) query(_ context.Context, pCtx backend.PluginContext, query backend.DataQuery) backend.DataResponse {
 	var response backend.DataResponse
 
-	queryObj, err := ParseDatasourceQuery(query)
+	queryObj := OracleDatasourceQuery{}
+	err := queryObj.ParseDatasourceQuery(query)
 	log.DefaultLogger.Debug(fmt.Sprintf("Executing new query: (%s) %+v", query.QueryType, queryObj))
 	if err != nil {
 		return backend.ErrDataResponse(backend.StatusBadRequest, fmt.Sprintf("Error parsing query: %v", err.Error()))
 	}
 
-	d.connection.MakeQuery(queryObj.O_sql, true)
+	result := queryObj.MakeQuery(&d.connection)
 
 	// create data frame response.
 	// For an overview on data frames and how grafana handles them:
@@ -113,10 +113,9 @@ func (d *OracleDatasource) query(_ context.Context, pCtx backend.PluginContext, 
 	frame := data.NewFrame("response")
 
 	// add fields.
-	frame.Fields = append(frame.Fields,
-		data.NewField("time", nil, []time.Time{query.TimeRange.From, query.TimeRange.To}),
-		data.NewField("values", nil, []int64{10, 20}),
-	)
+	for _, column := range result.columns {
+		frame.Fields = append(frame.Fields, data.NewField(column.name, nil, column.values))
+	}
 
 	// add the frames to the response.
 	response.Frames = append(response.Frames, frame)
