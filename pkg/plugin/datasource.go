@@ -79,15 +79,23 @@ func (d *OracleDatasource) Dispose() {
 // contains Frames ([]*Frame).
 func (d *OracleDatasource) QueryData(ctx context.Context, req *backend.QueryDataRequest) (*backend.QueryDataResponse, error) {
 	// create response struct
+	var err error
 	response := backend.NewQueryDataResponse()
+
+	if !d.connection.IsConnected() {
+		err = d.connection.Connect(&d.settings)
+	}
 
 	// loop over queries and execute them individually.
 	for _, q := range req.Queries {
-		res := d.query(ctx, req.PluginContext, q)
-
-		// save the response in a hashmap
-		// based on with RefID as identifier
-		response.Responses[q.RefID] = res
+		if err != nil {
+			response.Responses[q.RefID] = backend.ErrDataResponse(backend.StatusBadRequest, fmt.Sprintf("Error connecting datasource: %v", err.Error()))
+		} else {
+			res := d.query(ctx, req.PluginContext, q)
+			// save the response in a hashmap
+			// based on with RefID as identifier
+			response.Responses[q.RefID] = res
+		}
 	}
 
 	return response, nil

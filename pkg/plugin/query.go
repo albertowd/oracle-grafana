@@ -38,19 +38,20 @@ func (q *OracleDatasourceQuery) MakeQuery(c *OracleDatasourceConnection) OracleD
 
 	if c.IsConnected() {
 		stmt, err := c.connection.Prepare(q.O_sql)
-		defer stmt.Close()
 		if err != nil {
 			log.DefaultLogger.Error("Error preparing SQL: ", err)
 			result.err = err
 			return result
 		}
+		defer stmt.Close()
+
 		rows, err := stmt.Query()
-		defer rows.Close()
 		if err != nil {
 			log.DefaultLogger.Error("Error querying SQL: ", err)
 			result.err = err
 			return result
 		}
+		defer rows.Close()
 
 		columns, err := rows.Columns()
 		if err != nil {
