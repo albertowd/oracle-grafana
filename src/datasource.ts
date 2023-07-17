@@ -10,8 +10,7 @@ export class DataSource extends DataSourceWithBackend<MyQuery, MyDataSourceOptio
 
   getDefaultQuery(_: CoreApp): Partial<MyQuery> {
     return {
-      o_sql: 'SELECT *\n FROM SYS.races',
-      o_type: `table`
+      o_sql: 'SELECT *\n FROM SYS.races'
     }
   }
 }
