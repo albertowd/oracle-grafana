@@ -66,7 +66,7 @@ func (q *OracleDatasourceQuery) MakeQuery(c *OracleDatasourceConnection) OracleD
 
 		sacnValues := make([]sql.RawBytes, len(columns))
 		scanArgs := make([]interface{}, len(columns))
-		for i, _ := range scanArgs {
+		for i := range scanArgs {
 			scanArgs[i] = &sacnValues[i]
 		}
 
