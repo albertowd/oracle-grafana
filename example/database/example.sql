@@ -1,5 +1,5 @@
 CREATE TABLE races (
-  entries INTEGER NOT NULL,
+  entries INTEGER,
   name    VARCHAR2(64) NOT NULL,
   data    DATE NOT NULL
 );
@@ -11,6 +11,7 @@ INSERT ALL
    INTO races (entries, name, data) VALUES (28, 'Race 4', sysdate - 2/24)
    INTO races (entries, name, data) VALUES (32, 'Race 5', sysdate - 1/24)
    INTO races (entries, name, data) VALUES (34, 'Final', sysdate)
+   INTO races (entries, name, data) VALUES (NULL, 'Null', sysdate)
 SELECT 1 FROM DUAL;
 
 ALTER SESSION SET "_ORACLE_SCRIPT"=true;

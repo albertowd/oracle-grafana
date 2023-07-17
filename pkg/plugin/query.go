@@ -81,7 +81,7 @@ func (q *OracleDatasourceQuery) MakeQuery(c *OracleDatasourceConnection) OracleD
 				if scannedValue != nil {
 					result.columns[index].values = append(result.columns[index].values, string(scannedValue))
 				} else {
-					result.columns[index].values = append(result.columns[index].values, "~NULL~")
+					result.columns[index].values = append(result.columns[index].values, "(null)")
 				}
 			}
 		}
