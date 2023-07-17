@@ -10,6 +10,6 @@ docker run --rm -v "$PWD:/project:rw" alpine:latest sh -c "\
     npm run build &&\
     rm ./dist/gpx_oracle_grafana_darwin* ./dist/gpx_oracle_grafana_linux_ar* ./dist/gpx_oracle_grafana_windows* &&\
     mv ./dist/ ./albertowd-oracle-grafana/ &&\
-    tar -cvzf ./alberto-oracle-grafana.tar.gz ./albertowd-oracle-grafana/ &&\
+    tar -cvzf ./albertowd-oraclegrafana-datasource.tar.gz ./albertowd-oraclegrafana-datasource/ &&\
     cp ./alberto-oracle-grafana.tar.gz /project/
     "
