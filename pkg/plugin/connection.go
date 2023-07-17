@@ -2,6 +2,7 @@ package plugin
 
 import (
 	"database/sql"
+	"strings"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 	go_ora "github.com/sijms/go-ora/v2"
@@ -12,7 +13,7 @@ type OracleDatasourceConnection struct {
 }
 
 func (c *OracleDatasourceConnection) Connect(settings *OracleDatasourceSettings) error {
-	var connection *sql.DB
+	var connectionString string
 	var err error
 	if !c.IsConnected() {
 		urlOptions := map[string]string{}
@@ -21,24 +22,17 @@ func (c *OracleDatasourceConnection) Connect(settings *OracleDatasourceSettings)
 		}
 
 		if len(settings.O_connStr) > 0 {
-			connectionString := go_ora.BuildJDBC(settings.O_user, settings.O_password, settings.O_connStr, urlOptions)
-			// connectionString := "User id=" + settings.O_user + ";password=" + settings.O_password + "datasource=" + settings.O_connStr
-			log.DefaultLogger.Debug(connectionString)
-
-			con, conErr := sql.Open("oracle", connectionString)
-			connection = con
-			err = conErr
+			connectionString = go_ora.BuildJDBC(settings.O_user, settings.O_password, settings.O_connStr, urlOptions)
 		} else {
-			connectionString := go_ora.BuildUrl(settings.O_hostname, settings.O_port, settings.O_service, settings.O_user, settings.O_password, urlOptions)
-			log.DefaultLogger.Debug(connectionString)
-
-			con, conErr := sql.Open("oracle", connectionString)
-			connection = con
-			err = conErr
+			connectionString = go_ora.BuildUrl(settings.O_hostname, settings.O_port, settings.O_service, settings.O_user, settings.O_password, urlOptions)
 		}
 
-		if err != nil {
-			log.DefaultLogger.Error("Error connecting to Oracle: ", err)
+		log.DefaultLogger.Debug("Connecting to Oracle:", "connStr", strings.Replace(connectionString, settings.O_password, "********", 1))
+		connection, conErr := sql.Open("oracle", connectionString)
+
+		if conErr != nil {
+			log.DefaultLogger.Error("Error connecting to Oracle: ", conErr)
+			err = conErr
 		} else {
 			c.connection = connection
 			err = c.Ping()
