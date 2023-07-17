@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from 'react';
-import { InlineField, Input, SecretInput } from '@grafana/ui';
+import { HorizontalGroup, InlineField, Input, Legend, SecretInput, VerticalGroup } from '@grafana/ui';
 import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
 import { MyDataSourceOptions, MySecureJsonData } from '../types';
 
@@ -44,6 +44,7 @@ export function ConfigEditor(props: Props) {
       jsonData: {
         ...options.jsonData,
         o_service: event.target.value,
+        o_sid: ''
       }
     });
   };
@@ -53,6 +54,7 @@ export function ConfigEditor(props: Props) {
       ...options,
       jsonData: {
         ...options.jsonData,
+        o_service: '',
         o_sid: event.target.value,
       }
     });
@@ -96,29 +98,21 @@ export function ConfigEditor(props: Props) {
   const secureJsonData = (options.secureJsonData || {}) as MySecureJsonData;
 
   return (
-    <div className="gf-form-group">
-      <div className="gf-form">
-        <InlineField label="ConnString" labelWidth={12}>
+    <VerticalGroup>
+      <Legend>
+        Authentication
+      </Legend>
+      <HorizontalGroup>
+        <InlineField grow label="User" labelWidth={12}>
           <Input
-            placeholder="(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SID=XE)))"
-            value={jsonData.o_connStr}
-            width={80}
-            onChange={onConnStrChange}
-          />
-        </InlineField>
-      </div>
-      <div className="gf-form">
-        <InlineField label="Hostname" labelWidth={12}>
-          <Input
-            placeholder="localhost"
-            value={jsonData.o_hostname}
+            placeholder="oracle_user"
+            required
+            value={jsonData.o_user}
             width={40}
-            onChange={onHostnameChange}
+            onChange={onUserChange}
           />
         </InlineField>
-      </div>
-      <div className="gf-form">
-        <InlineField label="Password" labelWidth={12}>
+        <InlineField grow label="Password" labelWidth={12}>
           <SecretInput
             isConfigured={(secureJsonFields && secureJsonFields.o_password) as boolean}
             placeholder="oracle_password"
@@ -129,9 +123,28 @@ export function ConfigEditor(props: Props) {
             onReset={onPasswordReset}
           />
         </InlineField>
-      </div>
-      <div className="gf-form">
-        <InlineField label="Port" labelWidth={12}>
+      </HorizontalGroup>
+      <Legend>
+        Connection
+      </Legend>
+      <InlineField grow label="ConnString" labelWidth={12}>
+        <Input
+          placeholder="(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SID=XE)))"
+          value={jsonData.o_connStr}
+          width={94}
+          onChange={onConnStrChange}
+        />
+      </InlineField>
+      <HorizontalGroup>
+        <InlineField grow label="Hostname" labelWidth={12}>
+          <Input
+            placeholder="localhost"
+            value={jsonData.o_hostname}
+            width={40}
+            onChange={onHostnameChange}
+          />
+        </InlineField>
+        <InlineField grow label="Port" labelWidth={12}>
           <Input
             placeholder="1521"
             type="number"
@@ -140,9 +153,9 @@ export function ConfigEditor(props: Props) {
             onChange={onPortChange}
           />
         </InlineField>
-      </div>
-      <div className="gf-form">
-        <InlineField label="Service" labelWidth={12}>
+      </HorizontalGroup>
+      <HorizontalGroup>
+        <InlineField grow label="Service" labelWidth={12}>
           <Input
             placeholder=""
             value={jsonData.o_service}
@@ -150,9 +163,7 @@ export function ConfigEditor(props: Props) {
             onChange={onServiceChange}
           />
         </InlineField>
-      </div>
-      <div className="gf-form">
-        <InlineField label="SID" labelWidth={12}>
+        <InlineField grow label="or SID" labelWidth={12}>
           <Input
             placeholder="XE"
             value={jsonData.o_sid}
@@ -160,18 +171,7 @@ export function ConfigEditor(props: Props) {
             onChange={onSIDChange}
           />
         </InlineField>
-      </div>
-      <div className="gf-form">
-        <InlineField label="User" labelWidth={12}>
-          <Input
-            placeholder="oracle_user"
-            required
-            value={jsonData.o_user}
-            width={40}
-            onChange={onUserChange}
-          />
-        </InlineField>
-      </div>
-    </div>
+      </HorizontalGroup>
+    </VerticalGroup>
   );
 }
