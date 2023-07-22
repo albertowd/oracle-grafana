@@ -1,6 +1,6 @@
 import React, { ChangeEvent } from 'react';
-import { HorizontalGroup, InlineField, Input, Legend, SecretInput, VerticalGroup } from '@grafana/ui';
 import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
+import { HorizontalGroup, InlineField, Input, Legend, SecretInput, VerticalGroup } from '@grafana/ui';
 import { MyDataSourceOptions, MySecureJsonData } from '../types';
 
 interface Props extends DataSourcePluginOptionsEditorProps<MyDataSourceOptions> { }

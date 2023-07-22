@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"io"
+	"time"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
@@ -13,8 +14,8 @@ type OracleDatasourceQuery struct {
 	Datasource   OracleDatasourceInfo
 	DatasourceId int64
 	IntervalMs   int64
+	O_parsed     string
 	O_sql        string
-	O_type       string
 	RefId        string
 }
 
@@ -33,11 +34,11 @@ type OracleDatasourceResult struct {
 	columns []OracleDatasourceColumn
 }
 
-func (q *OracleDatasourceQuery) MakeQuery(c *OracleDatasourceConnection) OracleDatasourceResult {
+func (q *OracleDatasourceQuery) MakeQuery(c *OracleDatasourceConnection, from time.Time, to time.Time) OracleDatasourceResult {
 	result := OracleDatasourceResult{nil, []OracleDatasourceColumn{}}
 
 	if c.IsConnected() {
-		stmt, err := c.connection.Prepare(q.O_sql)
+		stmt, err := c.connection.Prepare(q.O_parsed)
 		if err != nil {
 			log.DefaultLogger.Error("Error preparing SQL: ", err)
 			result.err = err
@@ -97,6 +98,7 @@ func (q *OracleDatasourceQuery) MakeQuery(c *OracleDatasourceConnection) OracleD
 }
 
 func (q *OracleDatasourceQuery) ParseDatasourceQuery(query backend.DataQuery) error {
+	log.DefaultLogger.Debug("backend query", "json", query.JSON)
 	err := json.Unmarshal(query.JSON, &q)
 	if err != nil {
 		log.DefaultLogger.Error("Error parsing Oracle query: ", err)

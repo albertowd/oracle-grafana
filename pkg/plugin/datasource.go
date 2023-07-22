@@ -108,12 +108,12 @@ func (d *OracleDatasource) query(_ context.Context, pCtx backend.PluginContext, 
 
 	queryObj := OracleDatasourceQuery{}
 	err := queryObj.ParseDatasourceQuery(query)
-	log.DefaultLogger.Debug(fmt.Sprintf("Executing new query: (%s) %+v", query.QueryType, queryObj))
+	log.DefaultLogger.Debug(fmt.Sprintf("Executing new query: %+v", queryObj))
 	if err != nil {
 		return backend.ErrDataResponse(backend.StatusBadRequest, fmt.Sprintf("Error parsing query: %v", err.Error()))
 	}
 
-	result := queryObj.MakeQuery(&d.connection)
+	result := queryObj.MakeQuery(&d.connection, query.TimeRange.From, query.TimeRange.To)
 
 	// create data frame response.
 	// For an overview on data frames and how grafana handles them:
