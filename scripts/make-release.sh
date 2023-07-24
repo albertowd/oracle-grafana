@@ -11,7 +11,7 @@ npm ci && npm run build && mage -v
 echo "Compacting release files..."
 cd ./dist/
 tar --exclude="gpx*arm*" -cvzf ../albertowd-oraclegrafana-datasource-bundle-${PKG_VERSION}.tar.gz ./
-tar --exclude="gpx*arm*" --exclude="gpx*linux*" --exclude="gpx*windows*" -cvzf ../albertowd-oraclegrafana-datasource-${PKG_VERSION}-darwin-amd64.tar.gz ./
-tar --exclude="gpx*arm*" --exclude="gpx*darwin*" --exclude="gpx*windows*" -cvzf ../albertowd-oraclegrafana-datasource-${PKG_VERSION}-linux-amd64.tar.gz ./
-tar --exclude="gpx*arm*" --exclude="gpx*darwin*" --exclude="gpx*linux*" -cvzf ../albertowd-oraclegrafana-datasource-${PKG_VERSION}-windows-amd64.tar.gz ./
+tar --exclude="gpx*arm*" --exclude="gpx*linux*" --exclude="gpx*windows*" -cvzf ../albertowd-oraclegrafana-datasource-darwin-amd64-${PKG_VERSION}.tar.gz ./
+tar --exclude="gpx*arm*" --exclude="gpx*darwin*" --exclude="gpx*windows*" -cvzf ../albertowd-oraclegrafana-datasource-linux-amd64-${PKG_VERSION}.tar.gz ./
+tar --exclude="gpx*arm*" --exclude="gpx*darwin*" --exclude="gpx*linux*" -cvzf ../albertowd-oraclegrafana-datasource-windows-amd64-${PKG_VERSION}.tar.gz ./
 cd ../
