@@ -1,134 +1,51 @@
-# Grafana data source plugin template
+# Oracle Grafana data source plugin
 
-This template is a starting point for building a Data Source Plugin for Grafana.
+Plugin for translating Oracle queries (SELECT) to grafana dashboards.
 
-## What are Grafana data source plugins?
+It has support for Quey variables and simple variables on SQL preview.
 
-Grafana supports a wide range of data sources, including Prometheus, MySQL, and even Datadog. There’s a good chance you can already visualize metrics from the systems you have set up. In some cases, though, you already have an in-house metrics solution that you’d like to add to your Grafana dashboards. Grafana Data Source Plugins enables integrating such solutions with Grafana.
+Variable with multiple values will be supported in the future.
 
-## Getting started
+## Requirements
+* Grafana 9.5+
+* Oracle 12+
 
-### Backend
+## Plugin Installation
+Grafana servers can load plugins usualy from the /var/lib/grafana/plugins folder, so extract the albertowd-oraclegrafana-datasource-bundle-1.0.0.tar.gz to this folder.
 
-1. Update [Grafana plugin SDK for Go](https://grafana.com/docs/grafana/latest/developers/plugins/backend/grafana-plugin-sdk-for-go/) dependency to the latest minor version:
+From there, the plugin can be found, but will not be automatically installed without the `GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=albertowd-oraclegrafana-datasource` environment variable or `allow_loading_unsigned_plugins=albertowd-oraclegrafana-datasource` in tue grafana.ini file defining the plugin id.
 
-   ```bash
-   go get -u github.com/grafana/grafana-plugin-sdk-go
-   go mod tidy
-   ```
+Restart the grafana server and then the new data source must be visible at the Data source creation list:
 
-2. Build backend plugin binaries for Linux, Windows and Darwin:
+![Grafana datasource list](example/images/datasource-list.png)
 
-   ```bash
-   mage -v
-   ```
+## Configuration
 
-3. List all available Mage targets for additional commands:
+The configuration can be configured using the simple fields or using the `ConnString` field ignoring the others.
 
-   ```bash
-   mage -l
-   ```
-### Frontend
+![Grafana datasource configuration](example/images/datasource-config.png)
 
-1. Install dependencies
+## Queries
+The plugin only support the SELECT query.
 
-   ```bash
-   npm install
-   ```
+But it has a preview feature on the query configuration page so the user can view how it will run after replace all the Grafana variables within.
 
-2. Build plugin in development mode and run in watch mode
+It can use any simple variable created on the Grafana instance, just prefix the variable name with `$` on the query editor.
 
-   ```bash
-   npm run dev
-   ```
+It includes the default ones too: `$__from` and `$__to` from the dashboard:
 
-3. Build plugin in production mode
+![Grafana query editor](example/images/query-preview.png)
 
-   ```bash
-   npm run build
-   ```
+## Timeseries
+The plugin can only see string variables, for now, so, the fields must be converted before using in `timeseries` charts:
 
-4. Run the tests (using Jest)
+![Grafana query editor](example/images/query-preview-timeseries.png)
 
-   ```bash
-   # Runs the tests and watches for changes, requires git init first
-   npm run test
+## Query Variables
+Also, it can be configured variables using the data source as well, with custom SQL that returns only one column:
 
-   # Exits after running all the tests
-   npm run test:ci
-   ```
+![Grafana query editor](example/images/query-variable.png)
 
-5. Spin up a Grafana instance and run the plugin inside it (using Docker)
+And then using it on the query editor and dashboards using the dropdown variable:
 
-   ```bash
-   npm run server
-   ```
-
-6. Run the E2E tests (using Cypress)
-
-   ```bash
-   # Spins up a Grafana instance first that we tests against
-   npm run server
-
-   # Starts the tests
-   npm run e2e
-   ```
-
-7. Run the linter
-
-   ```bash
-   npm run lint
-
-   # or
-
-   npm run lint:fix
-   ```
-
-
-# Distributing your plugin
-
-When distributing a Grafana plugin either within the community or privately the plugin must be signed so the Grafana application can verify its authenticity. This can be done with the `@grafana/sign-plugin` package.
-
-_Note: It's not necessary to sign a plugin during development. The docker development environment that is scaffolded with `@grafana/create-plugin` caters for running the plugin without a signature._
-
-## Initial steps
-
-Before signing a plugin please read the Grafana [plugin publishing and signing criteria](https://grafana.com/docs/grafana/latest/developers/plugins/publishing-and-signing-criteria/) documentation carefully.
-
-`@grafana/create-plugin` has added the necessary commands and workflows to make signing and distributing a plugin via the grafana plugins catalog as straightforward as possible.
-
-Before signing a plugin for the first time please consult the Grafana [plugin signature levels](https://grafana.com/docs/grafana/latest/developers/plugins/sign-a-plugin/#plugin-signature-levels) documentation to understand the differences between the types of signature level.
-
-1. Create a [Grafana Cloud account](https://grafana.com/signup).
-2. Make sure that the first part of the plugin ID matches the slug of your Grafana Cloud account.
-   - _You can find the plugin ID in the plugin.json file inside your plugin directory. For example, if your account slug is `acmecorp`, you need to prefix the plugin ID with `acmecorp-`._
-3. Create a Grafana Cloud API key with the `PluginPublisher` role.
-4. Keep a record of this API key as it will be required for signing a plugin
-
-## Signing a plugin
-
-### Using Github actions release workflow
-
-If the plugin is using the github actions supplied with `@grafana/create-plugin` signing a plugin is included out of the box. The [release workflow](./.github/workflows/release.yml) can prepare everything to make submitting your plugin to Grafana as easy as possible. Before being able to sign the plugin however a secret needs adding to the Github repository.
-
-1. Please navigate to "settings > secrets > actions" within your repo to create secrets.
-2. Click "New repository secret"
-3. Name the secret "GRAFANA_API_KEY"
-4. Paste your Grafana Cloud API key in the Secret field
-5. Click "Add secret"
-
-#### Push a version tag
-
-To trigger the workflow we need to push a version tag to github. This can be achieved with the following steps:
-
-1. Run `npm version <major|minor|patch>`
-2. Run `git push origin main --follow-tags`
-
-
-## Learn more
-
-Below you can find source code for existing app plugins and other related documentation.
-
-- [Basic data source plugin example](https://github.com/grafana/grafana-plugin-examples/tree/master/examples/datasource-basic#readme)
-- [Plugin.json documentation](https://grafana.com/docs/grafana/latest/developers/plugins/metadata/)
-- [How to sign a plugin?](https://grafana.com/docs/grafana/latest/developers/plugins/sign-a-plugin/)
+![Grafana query editor](example/images/query-preview-variable.png)
