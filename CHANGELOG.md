@@ -53,3 +53,4 @@ Import from https://github.com/JamesOsgood/mongodb-grafana
 # TODO
 * SonarQube scan
 * Real tests
+* Multiple value variables
